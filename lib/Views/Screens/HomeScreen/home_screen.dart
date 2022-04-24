@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:social_x/Parameters/common_parameters.dart';
-import 'package:social_x/Screens/HomeScreen/Pages/login_page.dart';
-import 'package:social_x/news_screen.dart';
-import 'package:social_x/Screens/HomeScreen/Pages/signup_page.dart';
+import 'package:social_x/Controller/Functions/user_signin_and_signout.dart';
+import 'package:social_x/Models/Parameters/common_parameters.dart';
+import 'package:social_x/Views/Screens/HomeScreen/Pages/login_page.dart';
+import 'package:social_x/Views/Screens/HomeScreen/Pages/signup_page.dart';
+import 'package:social_x/Views/Widgets/homescreen_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,6 +15,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   final List<String> bottomText = ['LOGIN', 'REGISTER'];
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -56,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen>
         ),
         flexibleSpace: Container(
           color: Colors.red,
-          height: 80,
+          height: 90,
         ),
         shape: const RoundedRectangleBorder(
             side: BorderSide(color: Colors.red, width: 2),
@@ -87,17 +90,43 @@ class _HomeScreenState extends State<HomeScreen>
         ],
       ),
       bottomNavigationBar: GestureDetector(
-        onTap: () {
-          switch (tabController.index) {
-            case 0:
-              // Login User
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const NewsScreen()));
-              break;
-            case 1:
-              // Register User
-              break;
-            default:
+        onTap: () async {
+          passWordError = null;
+          emailError = null;
+
+          if (tabController.index == 0) {
+            if (loginFormkey.currentState!.validate()) {
+              setState(() {
+                isLoading = true;
+              });
+              await loginUser(loginEmailController.text,
+                  loginPasswordController.text, context);
+              setState(() {
+                isLoading = false;
+              });
+            }
+          } else {
+            if (signUpFormkey.currentState!.validate()) {
+              if (termAndConditionAccepted) {
+                setState(() {
+                  isLoading = true;
+                });
+
+                await registerUser(
+                    userNameController.text,
+                    emailController.text,
+                    passwordController.text,
+                    phoneNumberController.text,
+                    context);
+
+                setState(() {
+                  isLoading = false;
+                });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Read and Accept term & conditions.')));
+              }
+            }
           }
         },
         child: Container(
@@ -108,65 +137,19 @@ class _HomeScreenState extends State<HomeScreen>
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(29), topRight: Radius.circular(29)),
           ),
-          child: Text(
-            bottomText[tabController.index],
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
-            ),
-          ),
+          child: isLoading
+              ? const CircularProgressIndicator(
+                  color: Colors.white,
+                )
+              : Text(
+                  bottomText[tabController.index],
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
+                ),
         ),
-      ),
-    );
-  }
-}
-
-class TabWidget extends StatelessWidget {
-  const TabWidget({
-    Key? key,
-    required this.isSelected,
-    required this.label,
-  }) : super(key: key);
-
-  final bool isSelected;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: isSelected ? Colors.red : Colors.white,
-        borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1,
-          color: isSelected ? Colors.white : Colors.grey,
-        ),
-      ),
-    );
-  }
-}
-
-class BodyCard extends StatelessWidget {
-  const BodyCard({Key? key, required this.child}) : super(key: key);
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-        child: child,
       ),
     );
   }

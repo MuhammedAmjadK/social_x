@@ -13,7 +13,6 @@ A simple news app made with Flutter and Firebase.
 
 ## 📸 ScreenShots
 
-| Light| Dark|
 |------|-------|
 |<img src="assets\images\login page.jpg" width="400">|<img src="assets\images\signup page.jpg" width="400">|
 |<img src="assets\images\news page.jpg" width="400">|<img src="assets\images\password reset.jpg" width="400">|

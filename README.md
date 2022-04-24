@@ -18,6 +18,8 @@ A simple news app made with Flutter and Firebase.
 |<img src="assets\images\login page.jpg" width="400">|<img src="assets\images\signup page.jpg" width="400">|
 |<img src="assets\images\news page.jpg" width="400">|<img src="assets\images\password reset.jpg" width="400">|
 
+https://user-images.githubusercontent.com/91272849/164975464-5a7739b8-8fb3-48c3-a26d-8578a677d273.mp4
+
 ## 🔌 Plugins
 | Name | Usage |
 |------|-------|
